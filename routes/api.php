@@ -29,3 +29,5 @@ Route::controller(AuthController::class)->group(function () {
     Route::put('update','update');
 
 })->middleware('auth:api');
+Route::apiResource('categories', CategoryController::class);
+Route::apiResource('plants', PlantController::class);
