@@ -4,7 +4,9 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\PlantController;
+use App\Http\Controllers\RolesController;
 use App\Http\Controllers\CategoryController;
+use App\Http\Controllers\PermissionsController;
 
 /*
 |--------------------------------------------------------------------------
@@ -29,7 +31,19 @@ Route::controller(AuthController::class)->group(function () {
     Route::post('refresh','refresh');
     Route::get('me', 'me');
     Route::put('update','update');
-
 })->middleware('auth:api');
-Route::apiResource('categories', CategoryController::class);
-Route::apiResource('plants', PlantController::class);
+// group of middleware
+Route::group(['middleware' => ['auth:api']], function () {
+    Route::apiResource('categories', CategoryController::class);
+    Route::apiResource('plants', PlantController::class);
+    Route::get('roles/detail', [RolesController::class, 'indexWithPermissions']);
+    Route::put('/roles/{role}/permissions/{permission}', [RolesController::class, 'updatePermission']);
+    Route::resource('roles', RolesController::class);
+    Route::resource('permissions', PermissionsController::class);
+
+});
+// Route::apiResource('categories', CategoryController::class);
+// Route::apiResource('plants', PlantController::class);
+// Route::resource('roles', RolesController::class);
+// Route::resource('permissions', PermissionsController::class);
+
