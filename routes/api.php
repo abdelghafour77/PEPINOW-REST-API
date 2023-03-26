@@ -38,8 +38,8 @@ Route::group(['middleware' => ['auth:api']], function () {
     Route::put('/roles/{role}/permissions/{permission}', [RolesController::class, 'updatePermission']);
     Route::apiResource('categories', CategoryController::class);
     Route::apiResource('plants', PlantController::class);
-    Route::resource('roles', RolesController::class);
-    Route::resource('permissions', PermissionsController::class);
+    Route::apiResource('roles', RolesController::class);
+    Route::apiResource('permissions', PermissionsController::class);
 
 });
 // Route::apiResource('categories', CategoryController::class);

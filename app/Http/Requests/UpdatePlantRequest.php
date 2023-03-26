@@ -22,14 +22,11 @@ class UpdatePlantRequest extends FormRequest
     public function rules(): array
     {
         return [
-            //
             'name' => 'required|string',
             'description' => 'required|string',
             'price' => 'required|integer',
             'image' => 'required|string',
-            'category_id' => 'required|integer',
-            'user_id' => 'required|integer',
-
+            'category_id' => 'required|integer'
         ];
     }
 }

@@ -31,6 +31,7 @@ class PlantController extends Controller
     {
         if (auth()->user()->hasPermissionTo('create plants')) {
             $validated = $request->validated();
+            $validated["user_id"]=auth()->user()->id;
             $plant = Plant::create($validated);
             return response()->json([
                 'message' => 'Plant created successfully',
@@ -67,6 +68,7 @@ class PlantController extends Controller
     {
         if (auth()->user()->hasPermissionTo('edit plants')) {
             $validated = $request->validated();
+            $validated["user_id"]=auth()->user()->id;
             $plant->update($validated);
             return response()->json([
                 'message' => 'Plant updated successfully',
