@@ -14,17 +14,14 @@ class PlantController extends Controller
      */
     public function index()
     {
-        //
-        $plants = Plant::with('category')->get();
-        return response()->json($plants);
-    }
-
-    /**
-     * Show the form for creating a new resource.
-     */
-    public function create()
-    {
-        //
+        if (auth()->user()->hasPermissionTo('view plants')) {
+            $plants = Plant::with('category')->get();
+            return response()->json($plants);
+        }else{
+            return response()->json([
+                'message' => 'You cannot view plants'
+            ], 403);
+        }
     }
 
     /**
@@ -32,14 +29,18 @@ class PlantController extends Controller
      */
     public function store(StorePlantRequest $request)
     {
-        //
-        $this->authorize('create', Plant::class);
-        $validated = $request->validated();
-        $plant = Plant::create($validated);
-        return response()->json([
-            'message' => 'Plant created successfully',
-            'plant' => $plant
-        ]);
+        if (auth()->user()->hasPermissionTo('create plants')) {
+            $validated = $request->validated();
+            $plant = Plant::create($validated);
+            return response()->json([
+                'message' => 'Plant created successfully',
+                'plant' => $plant
+            ]);
+        }else{
+            return response()->json([
+                'message' => 'You cannot create plants'
+            ], 403);
+        }
     }
 
     /**
@@ -47,33 +48,35 @@ class PlantController extends Controller
      */
     public function show(Plant $plant)
     {
-        //
+        if (auth()->user()->hasPermissionTo('view plants')) {
 
-        $plant = Plant::with('category')->find($plant->id);
-        return response()->json($plant);
+            $plant = Plant::with('category')->find($plant->id);
+            return response()->json($plant);
+        }else{
+            return response()->json([
+                'message' => 'You cannot view plants'
+            ], 403);
+        }
     }
 
-    /**
-     * Show the form for editing the specified resource.
-     */
-    public function edit(Plant $plant)
-    {
-        //
-    }
 
     /**
      * Update the specified resource in storage.
      */
     public function update(UpdatePlantRequest $request, Plant $plant)
     {
-        //
-        $this->authorize('update', $plant);
-        $validated = $request->validated();
-        $plant->update($validated);
-        return response()->json([
-            'message' => 'Plant updated successfully',
-            'plant' => $plant
-        ]);
+        if (auth()->user()->hasPermissionTo('edit plants')) {
+            $validated = $request->validated();
+            $plant->update($validated);
+            return response()->json([
+                'message' => 'Plant updated successfully',
+                'plant' => $plant
+            ]);
+        }else{
+            return response()->json([
+                'message' => 'You cannot edit plants'
+            ], 403);
+        }
     }
 
     /**
@@ -81,12 +84,16 @@ class PlantController extends Controller
      */
     public function destroy(Plant $plant)
     {
-        //
-        $this->authorize('delete', $plant);
-        $plant->delete();
-        return response()->json([
-            'message' => 'Plant deleted successfully',
-            'plant' => $plant
-        ]);
+        if (auth()->user()->hasPermissionTo('delete plants')) {
+            $plant->delete();
+            return response()->json([
+                'message' => 'Plant deleted successfully',
+                'plant' => $plant
+            ]);
+        }else{
+            return response()->json([
+                'message' => 'You cannot delete plants'
+            ], 403);
+        }
     }
 }

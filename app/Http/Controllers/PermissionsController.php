@@ -12,9 +12,14 @@ class PermissionsController extends Controller
      */
     public function index()
     {
-        $permissions = Permission::all();
-
-        return response()->json($permissions);
+        if (auth()->user()->hasPermissionTo('view permissions')) {
+            $permissions = Permission::all();
+            return response()->json($permissions);
+        }else{
+            return response()->json([
+                'message' => 'You cannot view permission'
+            ], 403);
+        }
     }
 
     /**
@@ -22,14 +27,18 @@ class PermissionsController extends Controller
      */
     public function store(Request $request)
     {
-        $validatedData = $request->validate([
-            'name' => 'required|unique:permissions,name',
-            'description' => 'nullable|string',
-        ]);
-
-        $permission = Permission::create($validatedData);
-
-        return response()->json($permission, 201);
+        if (auth()->user()->hasPermissionTo('create permissions')) {
+            $validatedData = $request->validate([
+                'name' => 'required|unique:permissions,name',
+                'description' => 'nullable|string',
+            ]);
+            $permission = Permission::create($validatedData);
+            return response()->json($permission, 201);
+        }else{
+            return response()->json([
+                'message' => 'You cannot create permission'
+            ], 403);
+        }
     }
 
     /**
@@ -37,8 +46,14 @@ class PermissionsController extends Controller
      */
     public function show(string $id)
     {
-        $permission = Permission::findOrFail($id);
-        return response()->json($permission);
+        if (auth()->user()->hasPermissionTo('view permissions')) {
+            $permission = Permission::findOrFail($id);
+            return response()->json($permission);
+        }else{
+            return response()->json([
+                'message' => 'You cannot view permission'
+            ], 403);
+        }
     }
 
     /**
@@ -46,16 +61,19 @@ class PermissionsController extends Controller
      */
     public function update(Request $request, string $id)
     {
-        $permission = Permission::findOrFail($id);
-
-    $validatedData = $request->validate([
-        'name' => 'sometimes|required|unique:permissions,name,' . $permission->id,
-        'description' => 'nullable|string',
-    ]);
-
-    $permission->update($validatedData);
-
-    return response()->json($permission);
+        if (auth()->user()->hasPermissionTo('edit permissions')) {
+            $permission = Permission::findOrFail($id);
+            $validatedData = $request->validate([
+                'name' => 'sometimes|required|unique:permissions,name,' . $permission->id,
+                'description' => 'nullable|string',
+            ]);
+            $permission->update($validatedData);
+            return response()->json($permission);
+        }else{
+            return response()->json([
+                'message' => 'You cannot edit permission'
+            ], 403);
+        }
     }
 
     /**
@@ -63,10 +81,14 @@ class PermissionsController extends Controller
      */
     public function destroy(string $id)
     {
-        $permission = Permission::findOrFail($id);
-
-    $permission->delete();
-
-    return response()->json(['message' => 'Permission deleted successfully']);
+        if (auth()->user()->hasPermissionTo('delete permissions')) {
+            $permission = Permission::findOrFail($id);
+            $permission->delete();
+            return response()->json(['message' => 'Permission deleted successfully']);
+        }else{
+            return response()->json([
+                'message' => 'You cannot delete permissions'
+            ], 403);
+        }
     }
 }

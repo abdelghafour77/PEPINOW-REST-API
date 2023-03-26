@@ -39,6 +39,9 @@ class AuthController extends Controller
             'password' => bcrypt(request('password')),
         ]);
 
+        // assign role to user
+        $user->assignRole('user');
+
         $token = JWTAuth::fromUser($user);
 
         return response()->json(compact('user', 'token'), 201);
@@ -65,8 +68,14 @@ class AuthController extends Controller
         if (!$token = JWTAuth::attempt($credentials)) {
             return response()->json(['error' => 'Unauthorized'], 401);
         }
+        // get role and  permissions of each role of user
+        $user = auth()->user();
+        // $user->role = $user->getRoleNames();
+        $user->permissions = $user->getAllPermissions();
 
-        return response()->json(['token' => $token]);
+
+
+        return response()->json(['token' => $token,"user"=>$user]);
     }
 
     /**

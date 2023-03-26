@@ -34,10 +34,10 @@ Route::controller(AuthController::class)->group(function () {
 })->middleware('auth:api');
 // group of middleware
 Route::group(['middleware' => ['auth:api']], function () {
-    Route::apiResource('categories', CategoryController::class);
-    Route::apiResource('plants', PlantController::class);
     Route::get('roles/detail', [RolesController::class, 'indexWithPermissions']);
     Route::put('/roles/{role}/permissions/{permission}', [RolesController::class, 'updatePermission']);
+    Route::apiResource('categories', CategoryController::class);
+    Route::apiResource('plants', PlantController::class);
     Route::resource('roles', RolesController::class);
     Route::resource('permissions', PermissionsController::class);
 

@@ -9,28 +9,17 @@ use App\Http\Requests\UpdateCategoryRequest;
 
 class CategoryController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     */
-    public function __construct()
-    {
 
-    }
     public function index()
     {
-        // get all categories
-        $this->authorize('viewAny', Category::class);
+        if (auth()->user()->hasPermissionTo('view categories')) {
         $categories = Category::with('plants')->get();
         return response()->json($categories);
-
-    }
-
-    /**
-     * Show the form for creating a new resource.
-     */
-    public function create()
-    {
-        //
+        }else{
+            return response()->json([
+                'message' => 'You cannot view categories'
+            ], 403);
+        }
 
     }
 
@@ -39,17 +28,21 @@ class CategoryController extends Controller
      */
     public function store(StoreCategoryRequest $request)
     {
-        // authorize the user
-        $this->authorize('viewAny', Category::class);
-        // validate the name using the StoreCategoryRequest
-        $validated = $request->validated();
-        // create a new category
-        $category = Category::create($validated);
-        // return the new category
-        return response()->json([
-            'message' => 'Category created successfully',
-            'category' => $category
-        ]);
+        if (auth()->user()->hasPermissionTo('create categories')) {
+            // validate the name using the StoreCategoryRequest
+            $validated = $request->validated();
+            // create a new category
+            $category = Category::create($validated);
+            // return the new category
+            return response()->json([
+                'message' => 'Category created successfully',
+                'category' => $category
+            ]);}
+        else{
+            return response()->json([
+                'message' => 'You cannot create categories'
+            ], 403);
+        }
 
     }
 
@@ -58,24 +51,21 @@ class CategoryController extends Controller
      */
     public function show(Category $category)
     {
-        //
-        $this->authorize('viewAny', Category::class);
-        $category = Category::with('plants')->findOrFail($category->id);
-        if (!$category) {
-            # code...
+        if (auth()->user()->hasPermissionTo('view categories')) {
+            $category = Category::with('plants')->findOrFail($category->id);
+            if (!$category) {
+                # code...
+                return response()->json([
+                    'message' => 'Category not found'
+                ]);
+            }
+            return response()->json($category);
+        }else{
             return response()->json([
-                'message' => 'Category not found'
-            ]);
+                'message' => 'You cannot view categories'
+            ], 403);
         }
-        return response()->json($category);
-    }
 
-    /**
-     * Show the form for editing the specified resource.
-     */
-    public function edit(Category $category)
-    {
-        //
     }
 
     /**
@@ -83,15 +73,18 @@ class CategoryController extends Controller
      */
     public function update(UpdateCategoryRequest $request, Category $category)
     {
-        //
-        $this->authorize('viewAny', Category::class);
-
-        $validated = $request->validated();
-        $category->update($validated);
-        return response()->json([
-            'message' => 'Category updated successfully',
-            'category' => $category
-        ]);
+        if (auth()->user()->hasPermissionTo('edit categories')) {
+            $validated = $request->validated();
+            $category->update($validated);
+            return response()->json([
+                'message' => 'Category updated successfully',
+                'category' => $category
+            ]);
+        }else{
+            return response()->json([
+                'message' => 'You cannot edit categories'
+            ], 403);
+        }
     }
 
     /**
@@ -99,18 +92,22 @@ class CategoryController extends Controller
      */
     public function destroy(Category $category)
     {
-        //
-        $this->authorize('viewAny', Category::class);
-        $category = Category::findOrFail($category->id);
-        if (!$category) {
-            # code...
+        if (auth()->user()->hasPermissionTo('delete categories')) {
+            $category = Category::findOrFail($category->id);
+            if (!$category) {
+                # code...
+                return response()->json([
+                    'message' => 'Category not found'
+                ]);
+            }
+            $category->delete();
             return response()->json([
-                'message' => 'Category not found'
+                'message' => 'Category deleted successfully'
             ]);
+        }else{
+            return response()->json([
+                'message' => 'You cannot delete categories'
+            ], 403);
         }
-        $category->delete();
-        return response()->json([
-            'message' => 'Category deleted successfully'
-        ]);
     }
 }
