@@ -20,30 +20,25 @@ use App\Http\Controllers\PermissionsController;
 */
 
 Route::controller(AuthController::class)->group(function () {
-    Route::post('register','register');
-    Route::post('login','login');
-    Route::post('password-reset/{token}','updatePassword');
+    Route::post('register', 'register');
+    Route::post('login', 'login');
+    Route::post('password-reset/{token}', 'updatePassword');
     Route::post('resetPassword', 'resetPassword');
 });
 
 Route::controller(AuthController::class)->group(function () {
-    Route::post('logout','logout');
-    Route::post('refresh','refresh');
+    Route::post('logout', 'logout');
+    Route::post('refresh', 'refresh');
     Route::get('me', 'me');
-    Route::put('update','update');
+    Route::put('update', 'update');
 })->middleware('auth:api');
 // group of middleware
 Route::group(['middleware' => ['auth:api']], function () {
     Route::get('roles/detail', [RolesController::class, 'indexWithPermissions']);
     Route::put('/roles/{role}/permissions/{permission}', [RolesController::class, 'updatePermission']);
+    Route::put('/users/{user}/role/{role}', [RolesController::class, 'updateRole']);
     Route::apiResource('categories', CategoryController::class);
     Route::apiResource('plants', PlantController::class);
     Route::apiResource('roles', RolesController::class);
     Route::apiResource('permissions', PermissionsController::class);
-
 });
-// Route::apiResource('categories', CategoryController::class);
-// Route::apiResource('plants', PlantController::class);
-// Route::resource('roles', RolesController::class);
-// Route::resource('permissions', PermissionsController::class);
-

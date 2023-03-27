@@ -42,6 +42,7 @@ class RolesAndPermissionsSeeder extends Seeder
         Permission::create(['name' => 'edit roles']);
         Permission::create(['name' => 'delete roles']);
         Permission::create(['name' => 'grant and revoke permission']);
+        Permission::create(['name' => 'assign role']);
 
         // Permission Permissions
         Permission::create(['name' => 'view permissions']);
@@ -57,7 +58,7 @@ class RolesAndPermissionsSeeder extends Seeder
 
         // Assign Permissions to Roles
         $adminRole->syncPermissions(Permission::all());
-        $sellerRole->syncPermissions(['view categories','view plants','create plants','edit plants','delete plants']);
+        $sellerRole->syncPermissions(['view categories', 'view plants', 'create plants', 'edit plants', 'delete plants']);
         $userRole->syncPermissions(['view categories', 'view plants']);
     }
 }

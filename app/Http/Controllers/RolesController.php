@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
+use App\Models\User;
 use Spatie\Permission\Models\Role;
 use Spatie\Permission\Models\Permission;
 
@@ -14,7 +15,7 @@ class RolesController extends Controller
             $roles = Role::all();
 
             return response()->json($roles);
-        }else{
+        } else {
             return response()->json([
                 'message' => 'You cannot view roles'
             ], 403);
@@ -26,7 +27,7 @@ class RolesController extends Controller
         if (auth()->user()->hasPermissionTo('view roles')) {
             $roles = Role::with('permissions')->get();
             return response()->json($roles);
-        }else{
+        } else {
             return response()->json([
                 'message' => 'You cannot view roles'
             ], 403);
@@ -45,7 +46,7 @@ class RolesController extends Controller
             ]);
             $role = Role::create($validatedData);
             return response()->json($role, 201);
-        }else{
+        } else {
             return response()->json([
                 'message' => 'You cannot create roles'
             ], 403);
@@ -60,7 +61,7 @@ class RolesController extends Controller
         if (auth()->user()->hasPermissionTo('view roles')) {
             $role = Role::findOrFail($id);
             return response()->json($role);
-        }else{
+        } else {
             return response()->json([
                 'message' => 'You cannot view roles'
             ], 403);
@@ -80,7 +81,7 @@ class RolesController extends Controller
             ]);
             $role->update($validatedData);
             return response()->json($role);
-        }else{
+        } else {
             return response()->json([
                 'message' => 'You cannot edit roles'
             ], 403);
@@ -96,7 +97,7 @@ class RolesController extends Controller
             $role = Role::findOrFail($id);
             $role->delete();
             return response()->json(['message' => 'Role deleted successfully']);
-        }else{
+        } else {
             return response()->json([
                 'message' => 'You cannot delete roles'
             ], 403);
@@ -107,7 +108,7 @@ class RolesController extends Controller
     {
         if (auth()->user()->hasPermissionTo('grant and revoke permission')) {
             $grant = request()->input('grant');
-            if ($grant=="true") {
+            if ($grant == "true") {
                 $role->givePermissionTo($permission);
                 return response()->json([
                     'message' => 'Permission granted successfully.'
@@ -118,11 +119,31 @@ class RolesController extends Controller
                     'message' => 'Permission revoked successfully.'
                 ], 200);
             }
-        }else{
+        } else {
             return response()->json([
                 'message' => 'You cannot grant and revoke permission'
             ], 403);
         }
     }
-
+    public function updateRole(User $user, Role $role)
+    {
+        if (auth()->user()->hasPermissionTo('assign role')) {
+            $grant = request()->input('grant');
+            if ($grant == "true") {
+                $user->assignRole($role);
+                return response()->json([
+                    'message' => 'Role assigned successfully.'
+                ], 200);
+            } else {
+                $user->removeRole($role);
+                return response()->json([
+                    'message' => 'Role revoked successfully.'
+                ], 200);
+            }
+        } else {
+            return response()->json([
+                'message' => 'You cannot assign and revoke role'
+            ], 403);
+        }
+    }
 }
