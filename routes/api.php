@@ -32,7 +32,7 @@ Route::controller(AuthController::class)->group(function () {
     Route::get('me', 'me');
     Route::put('update', 'update');
 })->middleware('auth:api');
-// group of middleware
+
 Route::group(['middleware' => ['auth:api']], function () {
     Route::get('roles/detail', [RolesController::class, 'indexWithPermissions']);
     Route::put('/roles/{role}/permissions/{permission}', [RolesController::class, 'updatePermission']);
